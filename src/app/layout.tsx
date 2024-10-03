@@ -1,5 +1,5 @@
 'use client'
-import ModalActions from '@/components/modals/modalActions'
+import ModalActions from '@/components/Modals/ModalActions/ModalActions'
 import { signOut } from 'next-auth/react'
 import { useEffect, useState } from 'react'
 import { ToastContainer } from 'react-toastify'
@@ -34,7 +34,7 @@ export default function RootLayout({
             <div className="flex h-screen overflow-hidden">
               <div className="relative flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
                 <main>
-                  <div className="mx-auto max-w-screen-2xl p-4 md:p-6 2xl:p-10">
+                  <div className="mx-auto h-full max-w-screen-2xl p-4 md:p-6 2xl:p-10">
                     {children}
                   </div>
                   <ToastContainer
