@@ -1,7 +1,9 @@
 // authOptions.ts
+import https from 'https'
 import { NextAuthOptions } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import { cookies } from 'next/headers'
+import fetch from 'node-fetch'
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -12,23 +14,32 @@ export const authOptions: NextAuthOptions = {
         password: { label: 'Password', type: 'password' },
       },
       async authorize(credentials) {
-        console.log(credentials)
         if (!credentials?.username || !credentials?.password) {
           throw new Error('Invalid credentials')
         }
         try {
-          const response = await fetch(
-            `${process.env.NEXT_PUBLIC_API}/token?username=${credentials.username}&password=${credentials.password}`,
-            {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-            },
-          )
-          console.log('RESPONSE', response)
-          const res = await response.json()
-          cookies().set('Authorization', res.data)
+          const url = `https://api-onecloud.multicloud.tivit.com/fake/token?username=${encodeURIComponent(
+            credentials.username,
+          )}&password=${encodeURIComponent(credentials.password)}`
 
-          return res.data
+          const agent = new https.Agent({
+            rejectUnauthorized: false,
+          })
+
+          const response = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            agent,
+          })
+
+          if (!response.ok) {
+            throw new Error('Invalid response from API')
+          }
+          const validToken: any = await response.json()
+
+          cookies().set('Authorization', validToken.access_token)
+
+          return validToken
         } catch (error) {
           throw new Error("Can't login, try again")
         }
