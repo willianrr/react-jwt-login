@@ -1,7 +1,7 @@
 'use client'
 import ModalActions from '@/components/Modals/ModalActions/ModalActions'
 import { signOut } from 'next-auth/react'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import { removeCookie } from './actions'
@@ -14,17 +14,12 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   const [exit, setExit] = useState<boolean>(false)
-  const [enable, setEnable] = useState(true)
 
   const handleExit = async () => {
     setExit(false)
     await removeCookie('Authorization')
     return signOut({ callbackUrl: '/login' })
   }
-  useEffect(() => {
-    const token = localStorage.getItem('Authorization')
-    if (token) setEnable(false)
-  }, [])
 
   return (
     <html lang="pt-br">
